@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }} — వేగుచుక్క{% endblock %}
+{% block content %}
+<div class="container-fluid px-3 py-4">
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="bg-white p-4" style="border:1px solid var(--border)">
+        <div class="article-header">
+          <span class="cat-badge">{{ article.category }}</span>
+          <h1 class="article-title mt-2">{{ article.title }}</h1>
+          <div class="article-meta mt-2">
+            <span><i class="fas fa-user"></i> {{ article.reporter_name }}</span>
+            &nbsp;|&nbsp;
+            <span><i class="far fa-clock"></i> {{ article.published_at.strftime('%d %B %Y, %I:%M %p') if article.published_at else '' }}</span>
+            &nbsp;|&nbsp;
+            <span><i class="fas fa-eye"></i> {{ article.views }} చదువులు</span>
+          </div>
+        </div>
+        {% if article.image_url %}
+          <img src="{{ article.image_url }}" alt="{{ article.title }}" class="article-image">
+        {% endif %}
+        {% if article.summary %}
+          <p class="lead" style="color:#555;border-left:4px solid var(--red);padding-left:12px;font-style:italic">{{ article.summary }}</p>
+        {% endif %}
+        <div class="article-content mt-3">
+          {{ article.content | safe }}
+        </div>
+        <!-- Share -->
+        <div class="mt-4 pt-3 border-top">
+          <strong>పంచుకోండి:</strong>
+          <a href="https://wa.me/?text={{ article.title | urlencode }}" target="_blank" class="btn btn-sm btn-success ms-2"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url | urlencode }}" target="_blank" class="btn btn-sm btn-primary ms-2"><i class="fab fa-facebook"></i> Facebook</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="sidebar-widget">
+        <div class="section-title">సంబంధిత వార్తలు</div>
+        {% for rel in related %}
+        <div class="sidebar-news-item">
+          {% if rel.image_url %}
+            <img src="{{ rel.image_url }}" alt="">
+          {% else %}
+            <div style="width:60px;height:50px;background:#f0e8e0;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--red)"><i class="fas fa-newspaper"></i></div>
+          {% endif %}
+          <a href="{{ url_for('article', article_id=rel.id) }}" class="title">{{ rel.title[:80] }}...</a>
+        </div>
+        {% else %}
+        <p class="text-muted" style="font-size:13px">సంబంధిత వార్తలు లేవు.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

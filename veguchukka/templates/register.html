@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}నమోదు — వేగుచుక్క{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="container">
+    <div class="auth-box mx-auto">
+      <div class="auth-logo mb-1">వేగుచుక్క</div>
+      <p class="auth-sub">కొత్త అకౌంట్ సృష్టించండి</p>
+      <form method="POST" action="{{ url_for('register') }}">
+        <div class="mb-3">
+          <label class="form-label fw-600">వినియోగదారు పేరు</label>
+          <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-600">ఇమెయిల్</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-600">పాస్‌వర్డ్</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-600">పాత్ర ఎంచుకోండి</label>
+          <select name="role" class="form-select">
+            <option value="user">వినియోగదారుడు (వార్తలు చదవడానికి)</option>
+            <option value="reporter">రిపోర్టర్ (వార్తలు పంపడానికి)</option>
+          </select>
+          <small class="text-muted">సంపాదకుడు పాత్ర అడ్మిన్ ద్వారా మాత్రమే ఇవ్వబడుతుంది.</small>
+        </div>
+        <button type="submit" class="btn-primary-red btn">నమోదు అవండి</button>
+      </form>
+      <hr>
+      <p class="text-center" style="font-size:13px">ఇప్పటికే అకౌంట్ ఉందా? <a href="{{ url_for('login') }}" style="color:var(--red)">లాగిన్ అవండి</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

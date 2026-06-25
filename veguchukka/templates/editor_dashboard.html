@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}సంపాదకుని డాష్‌బోర్డ్ — వేగుచుక్క{% endblock %}
+{% block content %}
+<div class="container-fluid py-4 px-4" style="background:#f0f0f0;min-height:80vh">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">సంపాదకుని డాష్‌బోర్డ్</h4>
+      <small class="text-muted">స్వాగతం, {{ session.username }}!</small>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-4"><div class="stat-card stat-pending"><div class="number">{{ pending|length }}</div><div class="label">సమీక్ష కావాల్సినవి</div></div></div>
+    <div class="col-4"><div class="stat-card stat-approved"><div class="number">{{ approved|length }}</div><div class="label">ప్రచురించినవి</div></div></div>
+    <div class="col-4"><div class="stat-card stat-rejected"><div class="number">{{ rejected|length }}</div><div class="label">తిరస్కరించినవి</div></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3" id="editorTabs">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-pending">
+      పెండింగ్ <span class="badge bg-danger">{{ pending|length }}</span>
+    </button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-approved">ప్రచురించినవి</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-rejected">తిరస్కరించినవి</button></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- PENDING -->
+    <div class="tab-pane fade show active" id="tab-pending">
+      <div class="bg-white rounded p-3">
+        {% if pending %}
+        <div class="table-responsive">
+          <table class="table table-hover table-news">
+            <thead><tr><th>శీర్షిక</th><th>రిపోర్టర్</th><th>వర్గం</th><th>తేదీ</th><th>చర్యలు</th></tr></thead>
+            <tbody>
+              {% for art in pending %}
+              <tr>
+                <td><strong>{{ art.title[:80] }}</strong></td>
+                <td>{{ art.reporter_name }}</td>
+                <td><span class="cat-badge">{{ art.category }}</span></td>
+                <td style="font-size:12px">{{ art.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                  <a href="{{ url_for('review_article', article_id=art.id) }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i> సమీక్షించండి
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+          <i class="fas fa-check-circle fa-3x mb-3" style="color:#27ae60"></i>
+          <p>పెండింగ్ వార్తలేమీ లేవు!</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- APPROVED -->
+    <div class="tab-pane fade" id="tab-approved">
+      <div class="bg-white rounded p-3">
+        {% if approved %}
+        <div class="table-responsive">
+          <table class="table table-hover table-news">
+            <thead><tr><th>శీర్షిక</th><th>రిపోర్టర్</th><th>వర్గం</th><th>ప్రచురణ తేదీ</th><th>చదువులు</th><th>చర్యలు</th></tr></thead>
+            <tbody>
+              {% for art in approved %}
+              <tr>
+                <td><a href="{{ url_for('article', article_id=art.id) }}" target="_blank">{{ art.title[:70] }}</a></td>
+                <td>{{ art.reporter_name }}</td>
+                <td><span class="cat-badge">{{ art.category }}</span></td>
+                <td style="font-size:12px">{{ art.published_at.strftime('%d/%m/%Y') if art.published_at else '—' }}</td>
+                <td>{{ art.views }}</td>
+                <td>
+                  <a href="{{ url_for('review_article', article_id=art.id) }}" class="btn btn-sm btn-outline-secondary">సవరించు</a>
+                  <form action="{{ url_for('delete_article', article_id=art.id) }}" method="POST" class="d-inline" onsubmit="return confirm('ఖచ్చితంగా తొలగించాలా?')">
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">ఇంకా ఏమీ ప్రచురించలేదు.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- REJECTED -->
+    <div class="tab-pane fade" id="tab-rejected">
+      <div class="bg-white rounded p-3">
+        {% if rejected %}
+        <div class="table-responsive">
+          <table class="table table-hover table-news">
+            <thead><tr><th>శీర్షిక</th><th>రిపోర్టర్</th><th>తిరస్కరణ కారణం</th><th>తేదీ</th><th>చర్యలు</th></tr></thead>
+            <tbody>
+              {% for art in rejected %}
+              <tr>
+                <td>{{ art.title[:70] }}</td>
+                <td>{{ art.reporter_name }}</td>
+                <td style="font-size:12px;color:#666">{{ art.editor_note or '—' }}</td>
+                <td style="font-size:12px">{{ art.created_at.strftime('%d/%m/%Y') }}</td>
+                <td>
+                  <a href="{{ url_for('review_article', article_id=art.id) }}" class="btn btn-sm btn-outline-primary">తిరిగి సమీక్షించు</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">తిరస్కరించిన వార్తలేమీ లేవు.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

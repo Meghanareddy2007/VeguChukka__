@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}వార్త సమీక్ష — వేగుచుక్క{% endblock %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid py-4 px-4" style="background:#f0f0f0;min-height:80vh">
+  <div class="d-flex align-items-center mb-3">
+    <a href="{{ url_for('editor_dashboard') }}" class="btn btn-sm btn-outline-secondary me-3"><i class="fas fa-arrow-left"></i> వెనక్కి</a>
+    <h5 class="mb-0">వార్త సమీక్షించండి</h5>
+    <span class="badge-status status-{{ article.status }} ms-3 badge-status">
+      {% if article.status=='pending' %}పెండింగ్{% elif article.status=='approved' %}ఆమోదించబడింది{% else %}తిరస్కరించబడింది{% endif %}
+    </span>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="bg-white p-4 rounded" style="border:1px solid var(--border)">
+        <form method="POST" action="{{ url_for('review_article', article_id=article.id) }}">
+          <div class="mb-3">
+            <label class="form-label fw-bold">శీర్షిక</label>
+            <input type="text" name="title" class="form-control" value="{{ article.title }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">సారాంశం</label>
+            <textarea name="summary" class="form-control" rows="2">{{ article.summary or '' }}</textarea>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-bold">వార్త వివరాలు (సంపాదించవచ్చు)</label>
+            <div id="editor" style="height:300px"></div>
+            <input type="hidden" name="content" id="content-input" value="{{ article.content }}">
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-bold">సంపాదకుని గమనిక (రిపోర్టర్‌కు పంపబడుతుంది)</label>
+            <textarea name="editor_note" class="form-control" rows="2" placeholder="ఆమోదం/తిరస్కరణ కారణం...">{{ article.editor_note or '' }}</textarea>
+          </div>
+
+          <div class="d-flex gap-3">
+            <button type="submit" name="action" value="approve" class="btn btn-success px-4" onclick="saveContent()">
+              <i class="fas fa-check"></i> ఆమోదించి ప్రచురించండి
+            </button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger px-4" onclick="saveContent()">
+              <i class="fas fa-times"></i> తిరస్కరించండి
+            </button>
+            <a href="{{ url_for('editor_dashboard') }}" class="btn btn-outline-secondary">రద్దు</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="bg-white p-3 rounded mb-3" style="border:1px solid var(--border)">
+        <h6 class="text-danger mb-3">రిపోర్టర్ వివరాలు</h6>
+        <p class="mb-1"><strong>పేరు:</strong> {{ article.reporter_name }}</p>
+        <p class="mb-1"><strong>ఇమెయిల్:</strong> {{ article.reporter_email }}</p>
+        <p class="mb-1"><strong>వర్గం:</strong> {{ article.category }}</p>
+        <p class="mb-0"><strong>సమర్పణ తేదీ:</strong> {{ article.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+      </div>
+      {% if article.image_url %}
+      <div class="bg-white p-2 rounded" style="border:1px solid var(--border)">
+        <h6>ఫోటో ప్రివ్యూ</h6>
+        <img src="{{ article.image_url }}" class="img-fluid rounded">
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script>
+const quill = new Quill('#editor', { theme: 'snow' });
+quill.root.innerHTML = document.getElementById('content-input').value;
+function saveContent() {
+  document.getElementById('content-input').value = quill.root.innerHTML;
+}
+</script>
+{% endblock %}

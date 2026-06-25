@@ -1,0 +1,198 @@
+<!--
+=======================================================================
+  VEGUCHUKKA POST ADDON
+  Paste into your standalone reporter editor (the newspaper creator HTML)
+  
+  STEP 1: Find this line in the toolbar section:
+      <button class="btn btn-clear" onclick="clearAll()">🗑 Clear</button>
+  
+  Add right AFTER it:
+      <button class="btn" onclick="openPostModal()" style="background:linear-gradient(135deg,#c0140a,#96100a);color:#fff">🚀 Post</button>
+
+  STEP 2: Paste everything from the <div id="post-modal"> below
+          right before the closing </body> tag.
+=======================================================================
+-->
+
+<!-- ── POST TO WEBSITE MODAL ── -->
+<div id="post-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;">
+  <div style="background:#1a1a2e;border:2px solid #c0140a;border-radius:12px;padding:28px;max-width:440px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,0.7);color:#fff;position:relative;max-height:92vh;overflow-y:auto;">
+    <button onclick="closePostModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;line-height:1">✖</button>
+    <h3 style="color:#f5c800;margin:0 0 4px;font-size:1.1rem">🚀 వెబ్‌సైట్‌కి పంపండి</h3>
+    <p style="color:#aaa;font-size:12px;margin:0 0 18px">Post this article to Veguchukka website for editor review</p>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;color:#f5c800;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Reporter Name *</label>
+      <input id="pm-reporter" type="text" placeholder="మీ పేరు / Your name"
+        style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box" />
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;color:#f5c800;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">API Token *</label>
+      <input id="pm-token" type="text" placeholder="Reporter dashboard నుండి token పొందండి"
+        style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:9px 12px;font-size:12px;font-family:monospace;outline:none;box-sizing:border-box" />
+      <span style="font-size:11px;color:#888;margin-top:4px;display:block">
+        Reporter Dashboard → "API టోకెన్ పొందండి" బటన్ నొక్కండి
+      </span>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;color:#f5c800;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Category *</label>
+      <select id="pm-category"
+        style="width:100%;background:#1a1a2e;border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box">
+        <option value="">— వర్గం ఎంచుకోండి —</option>
+        <option value="రాజకీయాలు">రాజకీయాలు</option>
+        <option value="అంతర్జాతీయం">అంతర్జాతీయం</option>
+        <option value="క్రీడలు">క్రీడలు</option>
+        <option value="వ్యాపారం">వ్యాపారం</option>
+        <option value="వినోదం">వినోదం</option>
+        <option value="సాంకేతికత">సాంకేతికత</option>
+        <option value="ఆరోగ్యం">ఆరోగ్యం</option>
+        <option value="సాధారణం">సాధారణం</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <label style="font-size:11px;color:#f5c800;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Summary (optional)</label>
+      <textarea id="pm-summary" rows="2" placeholder="వార్త సారాంశం..."
+        style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:9px 12px;font-size:13px;resize:vertical;outline:none;box-sizing:border-box"></textarea>
+    </div>
+
+    <div id="pm-status" style="display:none;margin-bottom:14px;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:600;word-break:break-word"></div>
+
+    <div style="display:flex;gap:10px">
+      <button id="pm-submit-btn" onclick="submitToWebsite()"
+        style="flex:1;background:linear-gradient(135deg,#c0140a,#96100a);color:#fff;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:opacity .2s">
+        🚀 పంపండి
+      </button>
+      <button onclick="closePostModal()"
+        style="background:rgba(255,255,255,0.08);color:#ccc;border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:11px 18px;font-size:13px;cursor:pointer">
+        రద్దు
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── POST MODAL HELPERS ──────────────────────────────────────────────────────
+
+  function openPostModal() {
+    const modal = document.getElementById('post-modal');
+    modal.style.display = 'flex';
+    pmStatus('', '');
+  }
+
+  function closePostModal() {
+    document.getElementById('post-modal').style.display = 'none';
+  }
+
+  // Close on backdrop click
+  document.getElementById('post-modal').addEventListener('click', function(e) {
+    if (e.target === this) closePostModal();
+  });
+
+  function pmStatus(msg, type) {
+    const el = document.getElementById('pm-status');
+    if (!msg) { el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.textContent = msg;
+    const styles = {
+      ok:   { bg: '#1a4a2a', color: '#5ddf8c', border: '#2d7a45' },
+      err:  { bg: '#4a1a1a', color: '#ff7070', border: '#7a2d2d' },
+      info: { bg: '#2a2a1a', color: '#f5c800', border: '#7a6a00' },
+    };
+    const s = styles[type] || styles.info;
+    el.style.background = s.bg;
+    el.style.color = s.color;
+    el.style.border = '1px solid ' + s.border;
+  }
+
+  // Get the first uploaded image as a base64 data-URL
+  function getFirstImageDataUrl() {
+    for (let i = 1; i <= 4; i++) {
+      const img = document.getElementById('img' + i);
+      if (img && img.src && img.src.startsWith('data:')) return img.src;
+    }
+    return '';
+  }
+
+  // ── MAIN SUBMIT FUNCTION ────────────────────────────────────────────────────
+
+  async function submitToWebsite() {
+    const reporter = document.getElementById('pm-reporter').value.trim();
+    const token    = document.getElementById('pm-token').value.trim();
+    const category = document.getElementById('pm-category').value;
+    const summary  = document.getElementById('pm-summary').value.trim();
+
+    // Grab headline & content from the editor
+    const headlineEl = document.querySelector('.headline[contenteditable]');
+    const matterEl   = document.querySelector('.matter[contenteditable]');
+    const title   = headlineEl ? headlineEl.innerText.trim() : '';
+    const content = matterEl  ? matterEl.innerHTML.trim()   : '';
+
+    // Validate
+    const defaultHeadlines = ['HEADLINE', '[శీర్షిక / HEADLINE]', '[శీర్షిక]'];
+    if (!reporter)                          { pmStatus('Reporter name నమోదు చేయండి.', 'err'); return; }
+    if (!token)                             { pmStatus('API Token నమోదు చేయండి.', 'err'); return; }
+    if (!category)                          { pmStatus('Category ఎంచుకోండి.', 'err'); return; }
+    if (!title || defaultHeadlines.includes(title)) {
+                                              pmStatus('Headline నమోదు చేయండి.', 'err'); return; }
+    if (!content || content.length < 10)    { pmStatus('Article content నమోదు చేయండి.', 'err'); return; }
+
+    const btn = document.getElementById('pm-submit-btn');
+    btn.textContent = '⏳ పంపుతున్నాం...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    pmStatus('సర్వర్‌కి కనెక్ట్ అవుతున్నాం...', 'info');
+
+    const imageDataUrl = getFirstImageDataUrl();
+
+    const payload = {
+      token,
+      title,
+      content,
+      summary,
+      category,
+      reporter_name: reporter,
+      image_data: imageDataUrl   // base64 data-URL or '' if no photo
+    };
+
+    function resetBtn() {
+      btn.textContent = '🚀 పంపండి';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      let data;
+      try { data = await res.json(); } catch { data = {}; }
+
+      if (res.ok && data.success) {
+        pmStatus('✅ విజయవంతంగా పంపబడింది! సంపాదకుని ఆమోదం కోసం వేచి ఉంది.', 'ok');
+        btn.textContent = '✅ పంపబడింది';
+        // Auto-close after 3 seconds
+        setTimeout(() => { closePostModal(); resetBtn(); }, 3000);
+      } else {
+        const errMsg = data.error || 'సర్వర్ లోపం';
+        pmStatus('❌ ' + (errMsg === 'Invalid token'
+          ? 'Token తప్పుగా ఉంది. Dashboard నుండి కొత్త token తీసుకోండి.'
+          : errMsg), 'err');
+        resetBtn();
+      }
+    } catch (networkErr) {
+      pmStatus(
+        '❌ సర్వర్‌కి కనెక్ట్ కాలేదు.\n' +
+        'Flask app నడుస్తుందో చూడండి: http://localhost:5000\n' +
+        '(python app.py)',
+        'err'
+      );
+      resetBtn();
+    }
+  }
+</script>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ category }} వార్తలు — వేగుచుక్క{% endblock %}
+{% block content %}
+<div class="container-fluid px-3 py-4">
+  <div class="section-title mb-3">{{ category }} వార్తలు</div>
+  {% if articles %}
+  <div class="row g-3">
+    {% for art in articles %}
+    <div class="col-md-4 col-lg-3">
+      <div class="news-card">
+        {% if art.image_url %}
+          <img src="{{ art.image_url }}" alt="">
+        {% else %}
+          <div class="placeholder-news"><i class="fas fa-newspaper"></i></div>
+        {% endif %}
+        <div class="card-body">
+          <span class="cat-badge">{{ art.category }}</span>
+          <h6 class="card-title mt-1"><a href="{{ url_for('article', article_id=art.id) }}">{{ art.title }}</a></h6>
+          {% if art.summary %}<p class="card-summary">{{ art.summary[:80] }}...</p>{% endif %}
+          <small class="text-muted">{{ art.published_at.strftime('%d %b %Y') if art.published_at else '' }}</small>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="fas fa-newspaper fa-4x mb-3" style="color:#ddd"></i>
+    <p>ఈ వర్గంలో ఇంకా వార్తలు లేవు.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-danger">హోమ్‌కి వెళ్ళండి</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

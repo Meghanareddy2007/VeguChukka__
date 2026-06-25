@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}లాగిన్ — వేగుచుక్క{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="container">
+    <div class="auth-box mx-auto">
+      <div class="auth-logo mb-1">వేగుచుక్క</div>
+      <p class="auth-sub">దినపత్రిక పోర్టల్‌లోకి లాగిన్ అవండి</p>
+
+      <form method="POST" action="{{ url_for('login') }}">
+        <div class="mb-3">
+          <label class="form-label fw-600">వినియోగదారు పేరు</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <input type="text" name="username" class="form-control" placeholder="మీ పేరు నమోదు చేయండి" required autofocus>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-600">పాస్‌వర్డ్</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" name="password" class="form-control" placeholder="పాస్‌వర్డ్ నమోదు చేయండి" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary-red btn">లాగిన్ అవండి</button>
+      </form>
+
+      <hr>
+      <div class="text-center" style="font-size:13px;color:#666">
+        <p class="mb-1">అకౌంట్ లేదా? <a href="{{ url_for('register') }}" style="color:var(--red)">ఇక్కడ నమోదు చేసుకోండి</a></p>
+        <p class="mb-0">రిపోర్టర్ పోర్టల్: <a href="https://meghanareddy2007.github.io/Veguchukka/" target="_blank" style="color:var(--red)">బయటి లింక్ ద్వారా</a></p>
+      </div>
+
+      <!-- Role info -->
+      <div class="mt-3 p-3 rounded" style="background:#fff5f5;border:1px solid #ffd0d0;font-size:12px">
+        <strong style="color:var(--red)">పాత్రలు:</strong><br>
+        <span class="badge bg-danger me-1">సంపాదకుడు</span> వార్తలను ఆమోదించవచ్చు/తిరస్కరించవచ్చు<br>
+        <span class="badge bg-warning text-dark me-1">రిపోర్టర్</span> వార్తలు పంపవచ్చు<br>
+        <span class="badge bg-secondary me-1">వినియోగదారుడు</span> వార్తలు చదవవచ్చు
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

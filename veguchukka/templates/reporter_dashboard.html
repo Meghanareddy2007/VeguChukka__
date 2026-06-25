@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}రిపోర్టర్ డాష్‌బోర్డ్ — వేగుచుక్క{% endblock %}
+{% block content %}
+<div class="container-fluid py-4 px-4" style="background:#f0f0f0;min-height:80vh">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">స్వాగతం, {{ session.username }}!</h4>
+      <small class="text-muted">రిపోర్టర్ డాష్‌బోర్డ్</small>
+    </div>
+    <a href="https://meghanareddy2007.github.io/Veguchukka/" target="_blank" class="btn btn-danger"><i class="fas fa-plus"></i> కొత్త వార్త పంపండి</a>
+    <a href="https://meghanareddy2007.github.io/Veguchukka/" target="_blank" class="btn btn-warning ms-2"><i class="fas fa-paper-plane"></i> నేరుగా పోస్ట్ చేయండి</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-4"><div class="stat-card stat-pending"><div class="number">{{ stats.pending }}</div><div class="label">పెండింగ్</div></div></div>
+    <div class="col-4"><div class="stat-card stat-approved"><div class="number">{{ stats.approved }}</div><div class="label">ఆమోదించినవి</div></div></div>
+    <div class="col-4"><div class="stat-card stat-rejected"><div class="number">{{ stats.rejected }}</div><div class="label">తిరస్కరించినవి</div></div></div>
+  </div>
+
+  <!-- External Link Info -->
+  <div class="alert alert-info mb-4">
+    <i class="fas fa-link"></i>
+    <strong>బయటి పోర్టల్ ద్వారా వార్తలు పంపవచ్చు:</strong>
+    <a href="https://meghanareddy2007.github.io/Veguchukka/" target="_blank">https://meghanareddy2007.github.io/Veguchukka/</a>
+  </div>
+
+  <!-- Articles Table -->
+  <div class="bg-white rounded p-3">
+    <h6 class="mb-3">మీరు పంపిన వార్తలు</h6>
+    {% if articles %}
+    <div class="table-responsive">
+      <table class="table table-hover table-news">
+        <thead><tr><th>#</th><th>శీర్షిక</th><th>వర్గం</th><th>స్థితి</th><th>సంపాదకుని గమనిక</th><th>తేదీ</th></tr></thead>
+        <tbody>
+          {% for art in articles %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td style="max-width:250px"><strong>{{ art.title[:80] }}</strong></td>
+            <td><span class="cat-badge">{{ art.category }}</span></td>
+            <td>
+              <span class="badge-status status-{{ art.status }}">
+                {% if art.status=='pending' %}పెండింగ్
+                {% elif art.status=='approved' %}✓ ఆమోదించబడింది
+                {% else %}✗ తిరస్కరించబడింది{% endif %}
+              </span>
+            </td>
+            <td style="font-size:12px;color:#666">{{ art.editor_note or '—' }}</td>
+            <td style="font-size:12px">{{ art.created_at.strftime('%d/%m/%Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+      <i class="fas fa-newspaper fa-3x mb-3" style="color:#ddd"></i>
+      <p>మీరు ఇంకా వార్తలేమీ పంపలేదు.</p>
+      <a href="https://meghanareddy2007.github.io/Veguchukka/" target="_blank" class="btn btn-danger">మొదటి వార్త పంపండి</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+{% endblock %}
