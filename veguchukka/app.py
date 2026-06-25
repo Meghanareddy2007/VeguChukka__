@@ -36,9 +36,9 @@ app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'veguchukka')
 app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 if os.environ.get('MYSQL_USE_SSL') == '1':
-    app.config['MYSQL_SSL'] = True
-    app.config['MYSQL_SSL_VERIFY_CERT'] = True
-    app.config['MYSQL_SSL_CA'] = os.environ.get('MYSQL_SSL_CA', '/etc/ssl/certs/ca-certificates.crt')
+    app.config['MYSQL_CUSTOM_OPTIONS'] = {
+        'ssl': {'ca': os.environ.get('MYSQL_SSL_CA', '/etc/ssl/certs/ca-certificates.crt')}
+    }
 
 # File upload config
 app.config['UPLOAD_FOLDER'] = 'uploads'
