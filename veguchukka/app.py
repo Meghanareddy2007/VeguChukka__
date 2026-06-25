@@ -7,7 +7,7 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'veguchukka_secret_key_2024'
+app.secret_key = os.environ.get('SECRET_KEY', 'veguchukka_local_dev_only_key')
 
 # ── CORS for GitHub Pages reporter portal ──────────────────────────────────
 @app.after_request
@@ -20,12 +20,25 @@ def add_cors_headers(response):
     return response
 
 
-# MySQL Configuration (XAMPP defaults)
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''  # XAMPP default is empty
-app.config['MYSQL_DB'] = 'veguchukka'
+# # MySQL Configuration (XAMPP defaults)
+# app.config['MYSQL_HOST'] = 'localhost'
+# app.config['MYSQL_USER'] = 'root'
+# app.config['MYSQL_PASSWORD'] = ''  # XAMPP default is empty
+# app.config['MYSQL_DB'] = 'veguchukka'
+# app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+# MySQL Configuration
+# Reads from environment variables when set (Render + TiDB Cloud in production).
+# Falls back to XAMPP defaults so this still runs unchanged on your local machine.
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', 'localhost')
+app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
+app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'veguchukka')
+app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+if os.environ.get('MYSQL_USE_SSL') == '1':
+    app.config['MYSQL_SSL'] = True
+    app.config['MYSQL_SSL_VERIFY_CERT'] = True
+    app.config['MYSQL_SSL_CA'] = os.environ.get('MYSQL_SSL_CA', '/etc/ssl/certs/ca-certificates.crt')
 
 # File upload config
 app.config['UPLOAD_FOLDER'] = 'uploads'
